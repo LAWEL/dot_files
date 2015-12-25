@@ -26,3 +26,5 @@ call neobundle#end()
 " ファイルタイプ別のプラグイン/インデントを有効にする
 filetype plugin indent on
 
+" /tmp でバックアップファイルを作成しない(crontab と相性が悪いらしい)
+set backupskip="/tmp/*,/private/tmp/*" 
