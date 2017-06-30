@@ -3,6 +3,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-to-list 'load-path "~/.emacs.d/elisp/")
 (add-to-list 'exec-path "~/.cabal/bin/")
+(add-to-list 'exec-path (expand-file-name "~/.cargo/bin/"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PACKAGE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SETTING
@@ -200,6 +207,7 @@
 (define-key global-map (kbd "C-c f") 'flymake-mode)
 (define-key global-map (kbd "C-c C-c") 'compile)
 (define-key global-map (kbd "C-t") 'other-window)
+(define-key global-map (kbd "M-r") 'revert-buffer)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TERMINFO
@@ -282,14 +290,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-complete
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'auto-complete)
-(require 'auto-complete-config)
-(add-to-list 'load-path
-             (expand-file-name "~/.emacs.d/elpa/auto-complete-1.4"))
+;; (require 'auto-complete)
+;; (require 'auto-complete-config)
+;; (add-to-list 'load-path
+;;              (expand-file-name "~/.emacs.d/elpa/auto-complete-1.4"))
 
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-1.4/dict")
-(ac-config-default)
-(setq ac-modes (append ac-modes '(objc-mode)))
+;; (add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-1.4/dict")
+;; (ac-config-default)
+;; (setq ac-modes (append ac-modes '(objc-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-insert
@@ -368,7 +376,51 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Rust
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'flymake)
+(require 'rust-mode)
 
+;; flymake-rust.el
+(defun flymake-rust-init ()
+      (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                         'flymake-create-temp-inplace))
+             (local-file (file-relative-name
+                          temp-file
+                          (file-name-directory buffer-file-name))))
+        (list "/usr/local/bin/rustc" (list "--no-trans" local-file))))
+
+(add-to-list 'flymake-allowed-file-name-masks
+  '(".+\\.r[cs]$" flymake-rust-init
+    flymake-simple-cleanup flymake-get-real-file-name))
+
+(defun flymake-rust-load ()
+  (flymake-mode t)
+  ;; change these bindings as you see fit
+  ;; (local-set-key (kbd "C-c C-d") 'flymake-display-err-menu-for-current-line)
+  ;; (local-set-key (kbd "C-c C-n") 'flymake-goto-next-error)
+  ;; (local-set-key (kbd "C-c C-p") 'flymake-goto-prev-error)
+)
+;(add-hook 'rust-mode-hook 'flymake-rust-load)
+
+(provide 'flymake-rust)
+
+;;; racerやrustfmt、コンパイラにパスを通す
+(add-to-list 'exec-path (expand-file-name "~/.cargo/bin/"))
+;;; rust-modeでrust-format-on-saveをtにすると自動でrustfmtが走る
+(eval-after-load "rust-mode"
+  '(setq-default rust-format-on-save t))
+;;; rustのファイルを編集するときにracerとflymakeを起動する
+(add-hook 'rust-mode-hook (lambda ()
+                            (racer-mode)
+                            (flymake-rust-load)))
+
+;;; racerのeldocサポートを使う
+(add-hook 'racer-mode-hook #'eldoc-mode)
+;;; racerの補完サポートを使う
+(add-hook 'racer-mode-hook (lambda ()
+                             (company-mode)
+                             ;;; この辺の設定はお好みで
+                             (set (make-variable-buffer-local 'company-idle-delay) 0.1)
+                             (set (make-variable-buffer-local 'company-minimum-prefix-length) 0)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ruby
@@ -456,7 +508,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (rust-mode yasnippet typescript markdown-mode magit-tramp ghc flymake auto-complete)))
+    (company racer rust-mode yasnippet typescript markdown-mode magit-tramp ghc flymake)))
  '(safe-local-variable-values
    (quote
     ((haskell-process-use-ghci . t)
