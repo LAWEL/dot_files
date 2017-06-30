@@ -204,7 +204,7 @@
 (define-key global-map (kbd "M-i") 'indent-region)
 (define-key global-map (kbd "C-c r") 'replace-string)
 (define-key global-map (kbd "C-c c") 'comment-or-uncomment-region)
-(define-key global-map (kbd "C-c f") 'flymake-mode)
+;; (define-key global-map (kbd "C-c f") 'flymake-mode)
 (define-key global-map (kbd "C-c C-c") 'compile)
 (define-key global-map (kbd "C-t") 'other-window)
 (define-key global-map (kbd "M-r") 'revert-buffer)
@@ -232,35 +232,35 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; flymake
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'flymake)
+;; (require 'flymake)
 
-;; gotoした際にエラーメッセージをminibufferに表示する
-(defun display-error-message ()
-  (message (get-char-property (point) 'help-echo)))
-(defadvice flymake-goto-prev-error (after flymake-goto-prev-error-display-message)
-  (display-error-message))
-(defadvice flymake-goto-next-error (after flymake-goto-next-error-display-message)
-  (display-error-message))
-(ad-activate 'flymake-goto-prev-error 'flymake-goto-prev-error-display-message)
-(ad-activate 'flymake-goto-next-error 'flymake-goto-next-error-display-message)
+;; ;; gotoした際にエラーメッセージをminibufferに表示する
+;; (defun display-error-message ()
+;;   (message (get-char-property (point) 'help-echo)))
+;; (defadvice flymake-goto-prev-error (after flymake-goto-prev-error-display-message)
+;;   (display-error-message))
+;; (defadvice flymake-goto-next-error (after flymake-goto-next-error-display-message)
+;;   (display-error-message))
+;; (ad-activate 'flymake-goto-prev-error 'flymake-goto-prev-error-display-message)
+;; (ad-activate 'flymake-goto-next-error 'flymake-goto-next-error-display-message)
 
-;; display flymake error in minibuffer
-;; https://gist.github.com/415429
-(defun my-flymake-show-help ()
-  (when (get-char-property (point) 'flymake-overlay)
-    (let ((help (get-char-property (point) 'help-echo)))
-      (if help (message "%s" help)))))
+;; ;; display flymake error in minibuffer
+;; ;; https://gist.github.com/415429
+;; (defun my-flymake-show-help ()
+;;   (when (get-char-property (point) 'flymake-overlay)
+;;     (let ((help (get-char-property (point) 'help-echo)))
+;;       (if help (message "%s" help)))))
 
-(add-hook 'post-command-hook 'my-flymake-show-help)
+;; (add-hook 'post-command-hook 'my-flymake-show-help)
 
 ;; flymakeのエラー行表示色
-(custom-set-faces
+;; (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(flymake-errline ((((class color)) (:background "red"))))
- '(flymake-warnline ((((class color)) (:background "blue")))))
+ ;; '(flymake-errline ((((class color)) (:background "red"))))
+ ;; '(flymake-warnline ((((class color)) (:background "blue")))))
 
 ;; "flymakeが落ちる"対策
 ;; (defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
@@ -318,27 +318,27 @@
 ;; C/C++
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; c++のflymakeでmakefileを不要にする
-(defun flymake-cc-init ()
-  (let* ((temp-file   (flymake-init-create-temp-buffer-copy
-                       'flymake-create-temp-inplace))
-         (local-file  (file-relative-name
-                       temp-file
-                       (file-name-directory buffer-file-name))))
-    (list "g++" (list "-std=c++11" "-Wall" "-Wextra" "-fsyntax-only" "-Wshadow" "-pedantic-errors" local-file))))
-(push '("\\.cc$" flymake-cc-init) flymake-allowed-file-name-masks)
-(push '("\\.cpp$" flymake-cc-init) flymake-allowed-file-name-masks)
-(push '("\\.h$" flymake-cc-init) flymake-allowed-file-name-masks)
-(push '("\\.hpp$" flymake-cc-init) flymake-allowed-file-name-masks)
+;; (defun flymake-cc-init ()
+;;   (let* ((temp-file   (flymake-init-create-temp-buffer-copy
+;;                        'flymake-create-temp-inplace))
+;;          (local-file  (file-relative-name
+;;                        temp-file
+;;                        (file-name-directory buffer-file-name))))
+;;     (list "g++" (list "-std=c++11" "-Wall" "-Wextra" "-fsyntax-only" "-Wshadow" "-pedantic-errors" local-file))))
+;; (push '("\\.cc$" flymake-cc-init) flymake-allowed-file-name-masks)
+;; (push '("\\.cpp$" flymake-cc-init) flymake-allowed-file-name-masks)
+;; (push '("\\.h$" flymake-cc-init) flymake-allowed-file-name-masks)
+;; (push '("\\.hpp$" flymake-cc-init) flymake-allowed-file-name-masks)
 
 ;; cのflymakeでmakefileを不要にする
-(defun flymake-cc-init ()
-  (let* ((temp-file   (flymake-init-create-temp-buffer-copy
-                       'flymake-create-temp-inplace))
-         (local-file  (file-relative-name
-                       temp-file
-                       (file-name-directory buffer-file-name))))
-    (list "gcc" (list "-std=c++11" "-Wall" "-Wextra" "-fsyntax-only" "-Wshadow" local-file))))
-(push '("\\.c$" flymake-cc-init) flymake-allowed-file-name-masks)
+;; (defun flymake-cc-init ()
+;;   (let* ((temp-file   (flymake-init-create-temp-buffer-copy
+;;                        'flymake-create-temp-inplace))
+;;          (local-file  (file-relative-name
+;;                        temp-file
+;;                        (file-name-directory buffer-file-name))))
+;;     (list "gcc" (list "-std=c++11" "-Wall" "-Wextra" "-fsyntax-only" "-Wshadow" local-file))))
+;; (push '("\\.c$" flymake-cc-init) flymake-allowed-file-name-masks)
 
 ;; C++ mode hook
 (add-hook 'c++-mode-hook
@@ -347,7 +347,8 @@
              ;;(c-set-offset 'innamespace 0)
              (setq c-basic-offset 2)
              (setq tab-width 2)
-             (flymake-mode t)))
+             ;; (flymake-mode t)
+             ))
 
 ;; C mode hook
 (add-hook 'c-mode-hook
@@ -356,63 +357,45 @@
              ;;(c-set-offset 'innamespace 0)
              (setq c-basic-offset 2)
              (setq tab-width 2)
-             (flymake-mode t)))
+             ;; (flymake-mode t)
+             ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Java
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'flymake)
-(defun flymake-java-init ()
-  (flymake-simple-make-init-impl
-   'flymake-create-temp-with-folder-structure nil nil
-   buffer-file-name
-   'flymake-get-java-cmdline))
-(defun flymake-get-java-cmdline (source base-dir)
-  (list "javac" (list "-J-Dfile.encoding=utf-8" "-encoding" "utf-8"
-                      source)))
-(push '("\\.java$" flymake-java-init) flymake-allowed-file-name-masks)
-(add-hook 'java-mode-hook '(lambda () (flymake-mode t)))
+;; (require 'flymake)
+;; (defun flymake-java-init ()
+;;   (flymake-simple-make-init-impl
+;;    'flymake-create-temp-with-folder-structure nil nil
+;;    buffer-file-name
+;;    'flymake-get-java-cmdline))
+;; (defun flymake-get-java-cmdline (source base-dir)
+;;   (list "javac" (list "-J-Dfile.encoding=utf-8" "-encoding" "utf-8"
+;;                       source)))
+;; (push '("\\.java$" flymake-java-init) flymake-allowed-file-name-masks)
+;; (add-hook 'java-mode-hook '(lambda () (flymake-mode t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Rust
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'flymake)
-(require 'rust-mode)
-
-;; flymake-rust.el
-(defun flymake-rust-init ()
-      (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                         'flymake-create-temp-inplace))
-             (local-file (file-relative-name
-                          temp-file
-                          (file-name-directory buffer-file-name))))
-        (list "/usr/local/bin/rustc" (list "--no-trans" local-file))))
-
-(add-to-list 'flymake-allowed-file-name-masks
-  '(".+\\.r[cs]$" flymake-rust-init
-    flymake-simple-cleanup flymake-get-real-file-name))
-
-(defun flymake-rust-load ()
-  (flymake-mode t)
-  ;; change these bindings as you see fit
-  ;; (local-set-key (kbd "C-c C-d") 'flymake-display-err-menu-for-current-line)
-  ;; (local-set-key (kbd "C-c C-n") 'flymake-goto-next-error)
-  ;; (local-set-key (kbd "C-c C-p") 'flymake-goto-prev-error)
-)
-;(add-hook 'rust-mode-hook 'flymake-rust-load)
-
-(provide 'flymake-rust)
-
-;;; racerやrustfmt、コンパイラにパスを通す
+;; racerやrustfmt、コンパイラにパスを通す
 (add-to-list 'exec-path (expand-file-name "~/.cargo/bin/"))
 ;;; rust-modeでrust-format-on-saveをtにすると自動でrustfmtが走る
 (eval-after-load "rust-mode"
   '(setq-default rust-format-on-save t))
-;;; rustのファイルを編集するときにracerとflymakeを起動する
+
+;;; エラー箇所へ移動するkey-bindの設定
+(defun flycheck-rust-init-key ()
+  (local-set-key (kbd "M-p") 'flycheck-previous-error)
+  (local-set-key (kbd "M-n") 'flycheck-next-error)
+  )
+
+;;; rustのファイルを編集するときにracerとflycheckを起動する
 (add-hook 'rust-mode-hook (lambda ()
                             (racer-mode)
-                            (flymake-rust-load)))
-
+                            (flycheck-mode)
+                            (flycheck-rust-init-key)
+                            ))
 ;;; racerのeldocサポートを使う
 (add-hook 'racer-mode-hook #'eldoc-mode)
 ;;; racerの補完サポートを使う
@@ -421,6 +404,8 @@
                              ;;; この辺の設定はお好みで
                              (set (make-variable-buffer-local 'company-idle-delay) 0.1)
                              (set (make-variable-buffer-local 'company-minimum-prefix-length) 0)))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ruby
@@ -508,7 +493,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (company racer rust-mode yasnippet typescript markdown-mode magit-tramp ghc flymake)))
+    (exec-path-from-shell flycheck-rust company racer rust-mode yasnippet typescript markdown-mode magit-tramp ghc flymake)))
  '(safe-local-variable-values
    (quote
     ((haskell-process-use-ghci . t)
@@ -623,3 +608,13 @@
   (define-key lisp-interaction-mode-map [remap completion-at-point] 'helm-lisp-completion-at-point)
   (define-key emacs-lisp-mode-map       [remap completion-at-point] 'helm-lisp-completion-at-point))
 (add-hook 'kill-emacs-hook #'(lambda () (and (file-exists-p "$CONF_FILE") (delete-file "$CONF_FILE"))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+;; shell から PATH を引き継ぐ with https://github.com/purcell/exec-path-from-shell
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
