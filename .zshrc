@@ -31,6 +31,11 @@ alias less='less -giMqR'
 # GNU環境と揃える
 alias date='gdate'
 
+# colordiff installed by brew
+if [[ -x `which colordiff` ]]; then
+  alias diff='colordiff'
+fi
+
 #### 補完の設定
 # 補完機能を有効
 autoload -Uz compinit; compinit
