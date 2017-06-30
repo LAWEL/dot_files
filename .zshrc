@@ -7,7 +7,9 @@ export PATH=$PATH:/usr/local/share/bin
 export PATH=$PATH:/usr/local/Cellar/scala/2.10.2/bin
 export PATH=$PATH:$HOME/.cabal/bin
 export PATH=$PATH:$JAVA_HOME/bin
-export PATH="$HOME/.nodebrew/current/bin:$PATH"
+export PATH=$HOME/.nodebrew/current/bin:$PATH
+export PATH=$HOME/.cargo/bin:$PATH
+export RUST_SRC_PATH=$HOME/.multirust/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src
 
 ## CLASSPATH
 export CLASSPATH="./"
