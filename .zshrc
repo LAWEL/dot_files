@@ -15,7 +15,7 @@ export RUST_SRC_PATH=$HOME/.multirust/toolchains/stable-x86_64-apple-darwin/lib/
 export CLASSPATH="./"
 
 # 未定義変数を使わない
-setopt no_unset
+# setopt no_unset
 
 #### 文字コードの設定
 # 文字コードの設定
