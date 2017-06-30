@@ -230,44 +230,6 @@
 (setq coding-system-for-write 'utf-8)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; flymake
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (require 'flymake)
-
-;; ;; gotoした際にエラーメッセージをminibufferに表示する
-;; (defun display-error-message ()
-;;   (message (get-char-property (point) 'help-echo)))
-;; (defadvice flymake-goto-prev-error (after flymake-goto-prev-error-display-message)
-;;   (display-error-message))
-;; (defadvice flymake-goto-next-error (after flymake-goto-next-error-display-message)
-;;   (display-error-message))
-;; (ad-activate 'flymake-goto-prev-error 'flymake-goto-prev-error-display-message)
-;; (ad-activate 'flymake-goto-next-error 'flymake-goto-next-error-display-message)
-
-;; ;; display flymake error in minibuffer
-;; ;; https://gist.github.com/415429
-;; (defun my-flymake-show-help ()
-;;   (when (get-char-property (point) 'flymake-overlay)
-;;     (let ((help (get-char-property (point) 'help-echo)))
-;;       (if help (message "%s" help)))))
-
-;; (add-hook 'post-command-hook 'my-flymake-show-help)
-
-;; flymakeのエラー行表示色
-;; (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; '(flymake-errline ((((class color)) (:background "red"))))
- ;; '(flymake-warnline ((((class color)) (:background "blue")))))
-
-;; "flymakeが落ちる"対策
-;; (defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
-;;   (setq flymake-check-was-interrupted t))
-;; (ad-activate 'flymake-post-syntax-check)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; yasnippet
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-to-list 'load-path
@@ -288,18 +250,6 @@
 (define-key yas-minor-mode-map (kbd "M-s v") 'yas-visit-snippet-file)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; auto-complete
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (require 'auto-complete)
-;; (require 'auto-complete-config)
-;; (add-to-list 'load-path
-;;              (expand-file-name "~/.emacs.d/elpa/auto-complete-1.4"))
-
-;; (add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-1.4/dict")
-;; (ac-config-default)
-;; (setq ac-modes (append ac-modes '(objc-mode)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-insert
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'autoinsert)
@@ -317,29 +267,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C/C++
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; c++のflymakeでmakefileを不要にする
-;; (defun flymake-cc-init ()
-;;   (let* ((temp-file   (flymake-init-create-temp-buffer-copy
-;;                        'flymake-create-temp-inplace))
-;;          (local-file  (file-relative-name
-;;                        temp-file
-;;                        (file-name-directory buffer-file-name))))
-;;     (list "g++" (list "-std=c++11" "-Wall" "-Wextra" "-fsyntax-only" "-Wshadow" "-pedantic-errors" local-file))))
-;; (push '("\\.cc$" flymake-cc-init) flymake-allowed-file-name-masks)
-;; (push '("\\.cpp$" flymake-cc-init) flymake-allowed-file-name-masks)
-;; (push '("\\.h$" flymake-cc-init) flymake-allowed-file-name-masks)
-;; (push '("\\.hpp$" flymake-cc-init) flymake-allowed-file-name-masks)
-
-;; cのflymakeでmakefileを不要にする
-;; (defun flymake-cc-init ()
-;;   (let* ((temp-file   (flymake-init-create-temp-buffer-copy
-;;                        'flymake-create-temp-inplace))
-;;          (local-file  (file-relative-name
-;;                        temp-file
-;;                        (file-name-directory buffer-file-name))))
-;;     (list "gcc" (list "-std=c++11" "-Wall" "-Wextra" "-fsyntax-only" "-Wshadow" local-file))))
-;; (push '("\\.c$" flymake-cc-init) flymake-allowed-file-name-masks)
-
 ;; C++ mode hook
 (add-hook 'c++-mode-hook
           '(lambda()
@@ -363,17 +290,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Java
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (require 'flymake)
-;; (defun flymake-java-init ()
-;;   (flymake-simple-make-init-impl
-;;    'flymake-create-temp-with-folder-structure nil nil
-;;    buffer-file-name
-;;    'flymake-get-java-cmdline))
-;; (defun flymake-get-java-cmdline (source base-dir)
-;;   (list "javac" (list "-J-Dfile.encoding=utf-8" "-encoding" "utf-8"
-;;                       source)))
-;; (push '("\\.java$" flymake-java-init) flymake-allowed-file-name-masks)
-;; (add-hook 'java-mode-hook '(lambda () (flymake-mode t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Rust
@@ -410,44 +326,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ruby
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;; flymake for ruby
-;; (require 'flymake)
-;; ;; Invoke ruby with '-c' to get syntax checking
-;; (defun flymake-ruby-init ()
-;;   (let* ((temp-file   (flymake-init-create-temp-buffer-copy
-;;                        'flymake-create-temp-inplace))
-;;          (local-file  (file-relative-name
-;;                        temp-file
-;;                        (file-name-directory buffer-file-name))))
-;;     (list "ruby" (list "-c" local-file))))
-;; (push '(".+\\.rb$" flymake-ruby-init) flymake-allowed-file-name-masks)
-;; (push '("Rakefile$" flymake-ruby-init) flymake-allowed-file-name-masks)
-;; (push '("^\\(.*\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3) flymake-err-line-patterns)
-;; (add-hook
-;;  'ruby-mode-hook
-;;  '(lambda ()
-;;     ;; Don't want flymake mode for ruby regions in rhtml files
-;;     (if (not (null buffer-file-name)) (flymake-mode))
-;;     ;; エラー行で C-c d するとエラーの内容をミニバッファで表示する
-;;     (define-key ruby-mode-map "\C-cd" 'credmp/flymake-display-err-minibuf)))
-
-;; (defun credmp/flymake-display-err-minibuf ()
-;;   "Displays the error/warning for the current line in the minibuffer"
-;;   (interactive)
-;;   (let* ((line-no             (flymake-current-line-no))
-;;          (line-err-info-list  (nth 0 (flymake-find-err-info flymake-err-info line-no)))
-;;          (count               (length line-err-info-list))
-;;          )
-;;     (while (> count 0)
-;;       (when line-err-info-list
-;;         (let* ((file       (flymake-ler-file (nth (1- count) line-err-info-list)))
-;;                (full-file  (flymake-ler-full-file (nth (1- count) line-err-info-list)))
-;;                (text (flymake-ler-text (nth (1- count) line-err-info-list)))
-;;                (line       (flymake-ler-line (nth (1- count) line-err-info-list))))
-;;           (message "[%s] %s" line text)
-;;           )
-;;         )
-;;       (setq count (1- count)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Haskell
@@ -483,14 +361,13 @@
 (autoload 'ghc-debug "ghc" nil t)
 (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
 
-;; (add-hook 'haskell-mode-hook (lambda () (flymake-mode)))
-
 ;; yesodのhaskellファイル開いたら怒られたから追加
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ ;; globalな領域に移動させたい
  '(package-selected-packages
    (quote
     (exec-path-from-shell flycheck-rust company racer rust-mode yasnippet typescript markdown-mode magit-tramp ghc flymake)))
@@ -615,6 +492,10 @@
  ;; If there is more than one, they won't work right.
  )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PATH
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; init.elの先頭に置くとエラー
 ;; shell から PATH を引き継ぐ with https://github.com/purcell/exec-path-from-shell
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
