@@ -3,16 +3,21 @@ export TERM=xterm-color
 # 未定義変数を使わない
 # setopt no_unset
 
+# 存在するファイルにリダイレクトしない
+#setopt noclobber
+
 #### 文字コードの設定
 # 文字コードの設定
 export LANG=ja_JP.UTF-8
 
 #### ファイルの変更,削除
+## エイリアスの設定
 alias rm='rmtrash'
 alias mv='mv -i'
 alias cp='cp -i'
 alias ls='ls -AFGh'
 alias g++='g++ -g -std=c++11 -O2 -Wshadow'
+alias rime='d=`pwd`; while [ / "!=" "$d" ]; do [ -x "$d/rime.py" ] && break; d=`dirname "$d"`; done; "$d/rime.py"'
 alias less='less -giMqR'
 # GNU環境と揃える
 alias date='gdate'
@@ -43,6 +48,7 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 #### プロンプトの設定
 # VCSの情報を取得するzshの便利関数 vcs_infoを使う
 autoload -Uz vcs_info
+
 # 表示フォーマットの指定
 # %b ブランチ情報
 # %a アクション名(mergeなど)
@@ -53,6 +59,7 @@ precmd () {
     LANG=en_US.UTF-8 vcs_info
     [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
 }
+
 # バージョン管理されているディレクトリにいれば表示，そうでなければ非表示
 RPROMPT="[%d]%1(v|%F{green}%1v%f|)"
 PROMPT='[%n@%m]# '
@@ -90,10 +97,12 @@ setopt hist_verify
 setopt magic_equal_subst
 
 # 8 ビット目を通すようになり、日本語のファイル名を表示可能
-setopt print_eight_bit
+#setopt print_eight_bit
 
 # シェルのプロセスごとに履歴を共有
 setopt share_history
 
 # cd をしたときにlsを実行する
 function chpwd() { ls }
+
+[ -s "/Users/tatsuya_otake/.nvm/nvm.sh" ] && . "/Users/tatsuya_otake/.nvm/nvm.sh" # This loads nvm
