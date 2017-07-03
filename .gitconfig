@@ -1,0 +1,17 @@
+[color]
+	ui = auto
+[core]
+	quotepath = false
+	excludesfile = /Users/tatsuya_otake/.gitignore_global
+[init]
+	templatedir = ~/.git_template
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[merge]
+	ff = false
+[pull]
+	ff = only
