@@ -6,12 +6,6 @@
 (add-to-list 'exec-path (expand-file-name "~/.cargo/bin/"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; PACKAGE
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SETTING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Mac用フォント設定
@@ -21,17 +15,17 @@
 (set-face-attribute 'default nil
                     :family "Menlo" ;; font
                     :height 128)    ;; font size
-;; 日本語
-(set-fontset-font
- nil 'japanese-jisx0208
- (font-spec :family "Hiragino Kaku Gothic ProN")) ;; font
+;; 日本語(GUIのみ)
+(if (eq window-system 'ns)
+    (set-fontset-font
+     nil 'japanese-jisx0208
+     (font-spec :family "Hiragino Kaku Gothic ProN")) ;; font
+  )
 ;; 半角と全角の比を1:2にしたければ
 (setq face-font-rescale-alist
       '((".*Hiragino_Kaku_Gothic_ProN.*" . 1.2)));; Mac用フォント設定
 ;; オープニングメッセージを表示しない
 (setq inhibit-startup-message t)
-(setq whitespace-style
-      '(tabs tab-mark spaces space-mark))
 ;; ディスプレイの設定
 (display-time-mode 1)
 (line-number-mode 1)
@@ -39,40 +33,32 @@
 ;; ダイアログボックスを使わないようにする
 (setq use-dialog-box nil)
 (defalias 'message-box 'message)
-;; command-keyをmeta-keyとする
-(when (eq system-type 'darwin)
-  (setq ns-command-modifier (quote meta)))
 ;; yes-or-noをy-or-nとする
 (defalias 'yes-or-no-p 'y-or-n-p)
 ;; デフォルトをテキストモードにする
 (setq default-major-mode 'text-mode)
-;; トラックパッドのスクロール設定
-(defun scroll-down-with-lines ()
-  "" (interactive) (scroll-down 3)) ; 1回でスクロールする行数
-(defun scroll-up-with-lines ()
-  "" (interactive) (scroll-up 3))
-(global-set-key [wheel-up] 'scroll-down-with-lines)
-(global-set-key [wheel-down] 'scroll-up-with-lines)
-(global-set-key [double-wheel-up] 'scroll-down-with-lines)
-(global-set-key [double-wheel-down] 'scroll-up-with-lines)
-(global-set-key [triple-wheel-up] 'scroll-down-with-lines)
-(global-set-key [triple-wheel-down] 'scroll-up-with-lines)
 ;; ~/ を初期ディレクトリにする
 (cd "~/")
 ;; scratchの初期メッセージを消去する
 (setq initial-scratch-message "")
 ;; ビープ音を消す
 (setq ring-bell-function 'ignore)
-;; スクロールバーを消す
-(scroll-bar-mode -1)
-;; ツールバーを消す
-(tool-bar-mode -1)
+;; スクロールバーを消す(GUIのみ)
+(if (eq window-system 'ns)
+    (scroll-bar-mode -1)
+  )
+;; ツールバーを消す(GUIのみ)
+(if (eq window-system 'ns)
+    (tool-bar-mode -1)
+  )
 ;; メニューバーを消す
 (menu-bar-mode -1)
 ;; 対応す括弧をハイライト
 (show-paren-mode t)
 ;; バックアップを残さない
 (setq make-backup-files nil)
+;; オートセーブしない
+(setq auto-save-default nil)
 ;; 文字色
 (add-to-list 'default-frame-alist '(foreground-color . "white"))
 ;; 背景色
@@ -106,10 +92,16 @@
 (global-auto-revert-mode 1)
 ;; 保存時にカレントバッファの行末空白を削除
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; markdown-modeでは行末空白削除を無効化(確認できてない)
+(add-hook 'markdown-mode-hook
+          '(lambda ()
+             (set (make-local-variable 'delete-trailing-whitespace) nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TAB
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq whitespace-style
+      '(tabs tab-mark spaces space-mark))
 ;; Emacs で全角スペース/タブ文字を可視化
 (setq whitespace-space-regexp "\\(\x3000+\\)")
 (setq whitespace-display-mappings
@@ -123,6 +115,9 @@
 (set-face-foreground 'whitespace-tab "LightSlateGray")
 (set-face-background 'whitespace-tab "DarkSlateGray")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; indent
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Emacsでインデントを、タブを使わないでスペースを使う設定
 (setq-default tab-width 4 indent-tabs-mode nil)
 
@@ -145,6 +140,8 @@
 ;; package.el
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives
              '("marmalade" .
                "http://marmalade-repo.org/packages/"))
@@ -196,18 +193,41 @@
 (setq tabbar-buffer-list-function 'my-tabbar-buffer-list)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Key-Bind
+;; key-bind
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define-key global-map (kbd "M-[") 'tabbar-backward)
 (define-key global-map (kbd "M-]") 'tabbar-forward)
 (define-key global-map (kbd "C--") 'undo)
-(define-key global-map (kbd "M-i") 'indent-region)
-(define-key global-map (kbd "C-c r") 'replace-string)
+(define-key global-map (kbd "C-c i") 'indent-region)
+(define-key global-map (kbd "C-c r") 'replace-regexp)
 (define-key global-map (kbd "C-c c") 'comment-or-uncomment-region)
-;; (define-key global-map (kbd "C-c f") 'flymake-mode)
 (define-key global-map (kbd "C-c C-c") 'compile)
 (define-key global-map (kbd "C-t") 'other-window)
 (define-key global-map (kbd "M-r") 'revert-buffer)
+
+;; トラックパッドのスクロール設定
+(defun scroll-down-with-lines ()
+  "" (interactive) (scroll-down 3)) ; 1回でスクロールする行数
+(defun scroll-up-with-lines ()
+  "" (interactive) (scroll-up 3))
+(global-set-key [wheel-up] 'scroll-down-with-lines)
+(global-set-key [wheel-down] 'scroll-up-with-lines)
+(global-set-key [double-wheel-up] 'scroll-down-with-lines)
+(global-set-key [double-wheel-down] 'scroll-up-with-lines)
+(global-set-key [triple-wheel-up] 'scroll-down-with-lines)
+(global-set-key [triple-wheel-down] 'scroll-up-with-lines)
+
+;; command-keyをmeta-keyとする
+(when (eq system-type 'darwin)
+  (setq ns-command-modifier (quote meta)))
+
+;; forward-word で単語の先頭に移動する
+(defun forward-word+1 ()
+  (interactive)
+  (forward-word)
+  (forward-char))
+
+(global-set-key (kbd "M-f") 'forward-word+1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TERMINFO
@@ -265,27 +285,48 @@
 (require 'yatex-skeleton)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Shell Script
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-hook 'shell-script-mode-hook
+          '(lambda()
+             (setq indent-tabs-mode t
+                   tab-width 2
+                   sh-basic-offset tab-width)
+             ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C/C++
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C++ mode hook
 (add-hook 'c++-mode-hook
           '(lambda()
              (c-set-style "ellemtel")
-             ;;(c-set-offset 'innamespace 0)
-             (setq c-basic-offset 2)
-             (setq tab-width 2)
-             ;; (flymake-mode t)
+             (c-set-offset 'innamespace 0)
+             (c-set-offset 'arglist-close 0)
+             (c-set-offset 'member-init-intro 0)
+             (c-set-offset 'case-label 0)
+             (setq indent-tabs-mode t
+                   tab-width 4
+                   c-basic-offset tab-width)
              ))
 
 ;; C mode hook
-(add-hook 'c-mode-hook
-          '(lambda()
-             (c-set-style "ellemtel")
-             ;;(c-set-offset 'innamespace 0)
-             (setq c-basic-offset 2)
-             (setq tab-width 2)
-             ;; (flymake-mode t)
-             ))
+;; (add-hook 'c-mode-hook
+;;           '(lambda()
+;;              (c-set-style "ellemtel")
+;;              ;;(c-set-offset 'innamespace 0)
+;;              (setq c-basic-offset 2)
+;;              (setq tab-width 2)
+;;              (flymake-mode t)
+;;              ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Python
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Python mode hook
+(add-hook 'python-mode-hook 'guess-style-guess-tabs-mode)
+(add-hook 'python-mode-hook (lambda ()
+                              (guess-style-guess-tab-width)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Java
@@ -320,8 +361,6 @@
                              ;;; この辺の設定はお好みで
                              (set (make-variable-buffer-local 'company-idle-delay) 0.1)
                              (set (make-variable-buffer-local 'company-minimum-prefix-length) 0)))
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ruby
@@ -375,6 +414,61 @@
    (quote
     ((haskell-process-use-ghci . t)
      (haskell-indent-spaces . 4)))))
+
+;; ;; path
+;; ;; (add-to-list 'load-path "~/.emacs.d/elisp/haskell-mode-2.8.0/")
+
+;; ;; Flymake Haskell
+;; (require 'flymake)
+;; (require 'haskell-mode)
+;; (require 'haskell-cabal)
+
+
+;; ;; Haskell mapping
+;; (add-to-list 'auto-mode-alist '("//.hs$" . haskell-mode))
+;; (add-to-list 'auto-mode-alist '("//.lhs$" . haskell-mode))
+;; (add-to-list 'auto-mode-alist '("//.cabal//'$" . haskell-mode))
+
+;; (defun flymake-haskell-make-command (temp-file)
+;;   (list "make"
+;;         (flymake-haskell-make-parameters temp-file)))
+
+;; (defun flymake-haskell-make-parameters (temp-file)
+;;   (list "-s"
+;;         "-C"
+;;         "."
+;;         (concat "CHK_SOURCES=" temp-file)
+;;         "SYNTAX_CHECK_MODE=1"
+;;         "check-syntax"))
+
+;; (defun flymake-haskell-default-ghc-command (local-file)
+;;   (list "ghc"
+;;         (flymake-haskell-default-ghc-parameters
+;; 	 (file-name-nondirectory local-file))))
+
+;; (defun flymake-haskell-default-ghc-parameters (local-file)
+;;   (list "-fno-code" local-file))
+
+;; (defun makefile-exists-p (path)
+;;   (file-exists-p (concat path "Makefile")))
+
+;; (defun flymake-haskell-init()
+;;   (let* ((temp-file  (flymake-init-create-temp-buffer-copy
+;; 		      'flymake-create-temp-inplace))
+;;          (local-file (file-relative-name
+;; 		      temp-file
+;; 		      (file-name-directory buffer-file-name))))
+;;     (if (makefile-exists-p (file-name-directory buffer-file-name))
+;;         (flymake-haskell-make-command temp-file)
+;;       (flymake-haskell-default-ghc-command local-file))))
+
+;; (push '(".+//hs$" flymake-haskell-init) flymake-allowed-file-name-masks)
+;; (push '(".+//lhs$" flymake-haskell-init) flymake-allowed-file-name-masks)
+;; (push '("^//(/.+/.hs//|/.lhs//)://([0-9]+//)://([0-9]+//)://(/.+//)" 1 2 3 4)
+;;       flymake-err-line-patterns)
+
+;; (custom-set-variables
+;;  '(haskell-mode-hook '(turn-on-haskell-indentation)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Scala
@@ -436,30 +530,30 @@
 (setq makeindex-command "mendex -U")
 
 ;; color
-;(setq YaTeX-use-font-lock t)
-; section color
-;(setq YaTeX-hilit-sectioning-face '(light時のforecolor/backcolor dark時の forecolor/backcolor))
-;(setq YaTeX-hilit-sectioning-face '(white/snow3 snow1/snow3))
+;;(setq YaTeX-use-font-lock t)
+;; section color
+;;(setq YaTeX-hilit-sectioning-face '(light時のforecolor/backcolor dark時の forecolor/backcolor))
+;;(setq YaTeX-hilit-sectioning-face '(white/snow3 snow1/snow3))
 (add-hook 'yatex-mode-hook
-'(lambda () (require 'font-latex)
-            (font-latex-setup)
-            (progn
-              (modify-syntax-entry ?% "<" (syntax-table))
-              (modify-syntax-entry 10 ">" (syntax-table))
-              (make-variable-buffer-local 'outline-level)
-              (setq outline-level 'latex-outline-level)
-              (make-variable-buffer-local 'outline-regexp)
-              (setq outline-regexp
-                    (concat "[  \t]*\\\\\\(documentstyle\\|documentclass\\|chapter\\|"
-                           "section\\|subsection\\|subsubsection\\|paragraph\\)"
-                            "\\*?[ \t]*[[{]")
-                    ))))
+          '(lambda () (require 'font-latex)
+             (font-latex-setup)
+             (progn
+               (modify-syntax-entry ?% "<" (syntax-table))
+               (modify-syntax-entry 10 ">" (syntax-table))
+               (make-variable-buffer-local 'outline-level)
+               (setq outline-level 'latex-outline-level)
+               (make-variable-buffer-local 'outline-regexp)
+               (setq outline-regexp
+                     (concat "[  \t]*\\\\\\(documentstyle\\|documentclass\\|chapter\\|"
+                             "section\\|subsection\\|subsubsection\\|paragraph\\)"
+                             "\\*?[ \t]*[[{]")
+                     ))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; markdown.el
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (autoload 'markdown-mode "markdown-mode"
-"Major mode for editing Markdown files" t)
+  "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
@@ -491,6 +585,18 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; GNU GLOBAL(gtags)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(autoload 'gtags-mode "gtags" "" t)
+(setq gtags-mode-hook
+      '(lambda ()
+         (local-set-key "\M-t" 'gtags-find-tag)
+         (local-set-key "\M-r" 'gtags-find-rtag)
+         (local-set-key "\M-s" 'gtags-find-symbol)
+         (local-set-key "\C-t" 'gtags-pop-stack)
+         ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PATH
