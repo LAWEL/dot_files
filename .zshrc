@@ -1,19 +1,5 @@
 export TERM=xterm-color
 
-#### PATHの設定
-export JAVA_HOME='/Library/Java/JavaVirtualMachines/jdk1.7.0_25.jdk/Contents/Home'
-export PATH=$PATH:$JAVA_HOME/bin
-export PATH=$PATH:/usr/local/share/bin
-export PATH=$PATH:/usr/local/Cellar/scala/2.10.2/bin
-export PATH=$PATH:$HOME/.cabal/bin
-export PATH=$PATH:$JAVA_HOME/bin
-export PATH=$HOME/.nodebrew/current/bin:$PATH
-export PATH=$HOME/.cargo/bin:$PATH
-export RUST_SRC_PATH=$HOME/.multirust/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src
-
-## CLASSPATH
-export CLASSPATH="./"
-
 # 未定義変数を使わない
 # setopt no_unset
 
