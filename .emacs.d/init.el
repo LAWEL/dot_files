@@ -199,7 +199,7 @@
 (define-key global-map (kbd "M-]") 'tabbar-forward)
 (define-key global-map (kbd "C--") 'undo)
 (define-key global-map (kbd "C-c i") 'indent-region)
-(define-key global-map (kbd "C-c r") 'replace-regexp)
+(define-key global-map (kbd "M-%") 'query-replace-regexp)
 (define-key global-map (kbd "C-c c") 'comment-or-uncomment-region)
 (define-key global-map (kbd "C-c C-c") 'compile)
 (define-key global-map (kbd "C-t") 'other-window)
